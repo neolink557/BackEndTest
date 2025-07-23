@@ -1,5 +1,0 @@
-fastapi
-uvicorn
-databases[postgresql]
-sqlalchemy
-asyncpg

@@ -1,12 +1,20 @@
 import os
 from fastapi import FastAPI
 import sqlalchemy
+import uvicorn
 import databases
 
-DATABASE_URL = os.environ["DATABASE_URL"]  # <-- This reads the value from the environment
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if "sslmode" not in DATABASE_URL:
+    if "?" in DATABASE_URL:
+        DATABASE_URL += "&sslmode=require"
+    else:
+        DATABASE_URL += "?sslmode=require"
 
 database = databases.Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()
+
 
 app = FastAPI()
 
@@ -29,3 +37,8 @@ async def get_books():
 async def get_books_by_author(author_id: int):
     query = "SELECT * FROM books WHERE author_id = :author_id"
     return await database.fetch_all(query=query, values={"author_id": author_id}) 
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
