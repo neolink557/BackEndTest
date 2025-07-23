@@ -7,7 +7,6 @@ from databases import Database
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Construir la URL con sslmode=require si es necesario
-DATABASE_URL = os.getenv("SUPABASE_DB_URL", "")
 if "sslmode" not in DATABASE_URL:
     if "?" in DATABASE_URL:
         DATABASE_URL += "&sslmode=require"
