@@ -4,14 +4,7 @@ from contextlib import asynccontextmanager
 import os
 from databases import Database
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-# Construir la URL con sslmode=require si es necesario
-if "sslmode" not in DATABASE_URL:
-    if "?" in DATABASE_URL:
-        DATABASE_URL += "&sslmode=require"
-    else:
-        DATABASE_URL += "?sslmode=require"
+DATABASE_URL = os.environ["DATABASE_URL"] 
 
 database = Database(DATABASE_URL)
 
