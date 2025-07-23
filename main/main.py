@@ -1,30 +1,34 @@
 import os
 from fastapi import FastAPI
-import sqlalchemy
-import uvicorn
-import databases
+from contextlib import asynccontextmanager
+import os
+from databases import Database
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+# Construir la URL con sslmode=require si es necesario
+DATABASE_URL = os.getenv("SUPABASE_DB_URL", "")
 if "sslmode" not in DATABASE_URL:
     if "?" in DATABASE_URL:
         DATABASE_URL += "&sslmode=require"
     else:
         DATABASE_URL += "?sslmode=require"
 
-database = databases.Database(DATABASE_URL)
-metadata = sqlalchemy.MetaData()
+database = Database(DATABASE_URL)
 
-
-app = FastAPI()
-
-@app.on_event("startup")
-async def startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Conectar antes de iniciar la app
     await database.connect()
-
-@app.on_event("shutdown")
-async def shutdown():
+    yield
+    # Desconectar al cerrar la app
     await database.disconnect()
+
+app = FastAPI(lifespan=lifespan)
+
+@app.get("/")
+async def root():
+    return {"message": "App con Supabase funcionando correctamente"}
 
 # Example endpoint to fetch all books
 @app.get("/books")
