@@ -1,9 +1,9 @@
+import os
 from fastapi import FastAPI
 import sqlalchemy
 import databases
 
-# Replace with your actual Supabase connection string
-DATABASE_URL = "postgresql://postgres.ghltdvyqpdnkawqyhkho:%40-IdosDomi10-%40@aws-0-us-east-2.pooler.supabase.com:6543/postgres"
+DATABASE_URL = os.environ["DATABASE_URL"]  # <-- This reads the value from the environment
 
 database = databases.Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()
